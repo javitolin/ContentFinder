@@ -5,8 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StringFinder"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="Content Finder" Height="329" Width="530" Icon="Resources/ic_search_black_48dp_1x.png" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#FFF1F1F2" Foreground="#FF1995AD" Closing="Window_Closing">
+    <Grid Width="530">
+        <Label Content="Input Directory" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="#FF1995AD" Height="27"/>
+        <TextBox x:Name="inputDirectoryTxt" HorizontalAlignment="Left" Height="23" Margin="130,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="287" Foreground="#FF1995AD" />
+        <Button x:Name="inputDirectoryBtn" Content="Search" HorizontalAlignment="Left" Margin="434,14,10,0" VerticalAlignment="Top" Width="75" Height="23" Foreground="#FF1995AD" Click="inputDirectoryBtn_Click"/>
+        <Label Content="Search Term" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Foreground="#FF1995AD" Height="27"/>
+        <TextBox x:Name="searchTermTxt" HorizontalAlignment="Left" Height="23" Margin="130,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="287" Foreground="#FF1995AD"/>
+        <CheckBox x:Name="regexChkBox" Content="Regex" Margin="434,61,10,0" VerticalAlignment="Top" IsChecked="True" Foreground="#FF1995AD" HorizontalAlignment="Left" Width="75"/>
+        <Label Content="File extensions" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Foreground="#FF1995AD" Height="27"/>
+        <TextBox x:Name="fileExtensionsTxt" HorizontalAlignment="Left" Height="23" Margin="130,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="287" Foreground="#FF1995AD" Text="(\bdoc\b)|(\bdocx\b)|(\bxls\b)|(\bxlsx\b)|(\btxt\b)"/>
+        <Label Content="Output Directory" HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Foreground="#FF1995AD" Height="27"/>
+        <TextBox x:Name="outputDirectoryTxt" HorizontalAlignment="Left" Height="23" Margin="130,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="287" Foreground="#FF1995AD" />
+        <Button x:Name="outputDirectoryBtn" Content="Search" HorizontalAlignment="Left" Margin="434,148,10,0" VerticalAlignment="Top" Width="75" Height="23" Foreground="#FF1995AD" Click="outputDirectoryBtn_Click"/>
+        <Button x:Name="startBtn" Content="Start" HorizontalAlignment="Left" Margin="227,202,0,0" VerticalAlignment="Top" Width="75" Height="23" Foreground="#FF1995AD" Click="startBtn_Click"/>
+        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="20" Margin="10,251,10,0" VerticalAlignment="Top" Width="499"/>
     </Grid>
 </Window>
