@@ -43,5 +43,10 @@ namespace StringFinder.Finders
         {
             //Not needed
         }
+
+        public override string GetName()
+        {
+            return "Text Finder";
+        }
     }
 }

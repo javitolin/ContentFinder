@@ -60,5 +60,10 @@ namespace StringFinder.Finders
                 Marshal.ReleaseComObject(application);
             }
         }
+
+        public override string GetName()
+        {
+            return "Word Finder";
+        }
     }
 }

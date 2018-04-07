@@ -13,7 +13,7 @@ namespace StringFinder
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(MainWindow));
 
@@ -26,14 +26,15 @@ namespace StringFinder
 
         // Private Members
         private List<IFinder> _iFinders;
-        private Dictionary<string, IFinder> _iFindersDictionary;
-        private Dictionary<IFinder, List<string>> _iFinderToFileName;
+        private readonly Dictionary<string, IFinder> _iFindersDictionary;
+        private readonly Dictionary<IFinder, List<string>> _iFinderToFileName;
         private int _totalNumberOfFilesToSearch;
-        private int _totalNumberOfFilesSoFar = 0;
+        private int _totalNumberOfFilesSoFar;
 
         public MainWindow()
         {
-            Logger.Info("Starting new instance of Content Finder");
+            Logger.Info("********** Starting instance of Content Finder **********");
+
             InitializeComponent();
             progressBar.Visibility = Visibility.Hidden;
             _iFindersDictionary = new Dictionary<string, IFinder>();
@@ -86,12 +87,13 @@ namespace StringFinder
             {
                 IFinder finder = keyValuePair.Key;
                 List<string> filesToSearchIn = keyValuePair.Value;
+                Logger.Info($"Running finder {finder.GetName()}");
                 foreach (string filename in filesToSearchIn)
                 {
                     bool? textFound = false;
-
-                    Dispatcher.Invoke(() => { textFound = finder?.Search(filename, searchRegexText); });
-                    if (textFound.HasValue && textFound.Value)
+                    Logger.Debug($"Searching in file {filename}");
+                    Dispatcher.Invoke(() => { textFound = finder.Search(filename, searchRegexText); });
+                    if (textFound != null && textFound.Value)
                     {
                         finder.FileFound(filename, outputDirectoryRoot);
                     }
@@ -109,7 +111,7 @@ namespace StringFinder
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(searchDirectory);
             Regex fileExtensionRegex = new Regex(_fileExtensionText);
-            foreach (FileInfo fileInfo in directoryInfo.GetFiles())
+            foreach (FileInfo fileInfo in directoryInfo.GetFiles().Where(f => !f.Attributes.HasFlag(FileAttributes.Hidden))) //Don't read hidden files
             {
                 string extension = fileInfo.Extension.Replace(".","");
                 if (!fileExtensionRegex.IsMatch(extension)) continue;
@@ -122,13 +124,14 @@ namespace StringFinder
 
                 _iFinderToFileName[finder].Add(fileInfo.FullName);
 
+                Logger.Debug($"Pairing file {fileInfo.FullName} with finder {finder.GetName()}");
+
                 _totalNumberOfFilesSoFar++;
                 Dispatcher.Invoke(() =>
                 {
-                    progressBar.Value = ((double)_totalNumberOfFilesSoFar / _totalNumberOfFilesToSearch) * 100;
+                    progressBar.Value = (double)_totalNumberOfFilesSoFar / _totalNumberOfFilesToSearch * 100;
                 });
 
-                Logger.Debug($"Search so far {_totalNumberOfFilesSoFar} of {_totalNumberOfFilesToSearch}");
             }
 
             foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
@@ -140,11 +143,10 @@ namespace StringFinder
 
         private IFinder GetFinder(string extension)
         {
-            if (!_iFindersDictionary.ContainsKey(extension))
-            {
-                IFinder suitableIFinder = _iFinders.FirstOrDefault(m => m.CanSearch(extension));
-                _iFindersDictionary.Add(extension, suitableIFinder);
-            }
+            if (_iFindersDictionary.ContainsKey(extension)) return _iFindersDictionary[extension];
+
+            IFinder suitableIFinder = _iFinders.FirstOrDefault(m => m.CanSearch(extension));
+            _iFindersDictionary.Add(extension, suitableIFinder);
 
             return _iFindersDictionary[extension];
         }
@@ -208,7 +210,7 @@ namespace StringFinder
             _outputDirectoryRoot = outputDirectoryTxt.Text;
             _searchTermText = searchTermTxt.Text;
             _fileExtensionText = fileExtensionsTxt.Text;
-            _isRegex = regexChkBox.IsChecked.Value;
+            _isRegex = regexChkBox.IsChecked.HasValue && regexChkBox.IsChecked.Value;
 
             if (!Directory.Exists(_searchDirectory))
             {
@@ -250,10 +252,15 @@ namespace StringFinder
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            foreach (var iFinder in _iFinders)
+            if (_iFinders != null)
             {
-                iFinder.Close();
+                foreach (var iFinder in _iFinders)
+                {
+                    iFinder.Close();
+                }
             }
+
+            Logger.Info("********** Closing instance of Content Finder **********");
         }
     }
 }

@@ -27,6 +27,12 @@ namespace StringFinder.Finders
         public abstract void Close();
 
         /// <summary>
+        /// Returns the iFinder name
+        /// </summary>
+        /// <returns></returns>
+        public abstract string GetName();
+
+        /// <summary>
         /// </summary>
         /// <param name="fileExtension"></param>
         /// <returns>Returns true if this class can search this type of extension</returns>

@@ -94,5 +94,10 @@ namespace StringFinder.Finders
                 Marshal.ReleaseComObject(xlApp);
             }
         }
+
+        public override string GetName()
+        {
+            return "Excel Finder";
+        }
     }
 }
